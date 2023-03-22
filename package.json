@@ -1,0 +1,26 @@
+{
+  "name": "pet-store-api",
+  "version": "1.0.0",
+  "description": "An API for managing the pet's in the store. This is a fun project given by GDSC club",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "tsc && node dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HarshPatel5940/pet-store-api.git"
+  },
+  "keywords": [
+    "API",
+    "Typescript"
+  ],
+  "author": "HarshPatel5940",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HarshPatel5940/pet-store-api/issues"
+  },
+  "homepage": "https://github.com/HarshPatel5940/pet-store-api#readme",
+  "dependencies": {
+    "yup": "^1.0.2"
+  }
+}
