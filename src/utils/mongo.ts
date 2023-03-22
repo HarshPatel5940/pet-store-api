@@ -1,6 +1,7 @@
 import { config } from "dotenv";
+import { nanoid } from "nanoid/async";
 import { MongoClient } from "mongodb";
-import { validatePet, validateOwner } from "./validate";
+import { validatePet, validateOwner, validateUuid } from "./validate";
 config();
 
 if (process.env.MONGO_URI === undefined) {
@@ -31,14 +32,12 @@ async function MongoConnect() {
 }
 
 async function createUuid(col: "pets" | "owners"): Promise<string | undefined> {
-    let uuid;
-    import("nanoid").then((nanoid) => {
-        uuid = nanoid.nanoid(15);
-    });
+    let uuid = await nanoid(15);
 
     const result = await db.collection(col).find({ uuid: uuid }).toArray();
 
     if (result.length === 0) {
+        console.log(`UUID : ${col} : Created : uud = ${uuid}`);
         return uuid;
     } else {
         console.log("UUID : REGENERATING A NEW ONE one");
@@ -46,7 +45,7 @@ async function createUuid(col: "pets" | "owners"): Promise<string | undefined> {
     }
 }
 
-async function createOwner(owner: any): Promise<Number> {
+async function createOwner(owner: any): Promise<number> {
     delete owner["_id"];
     delete owner["uuid"];
 
@@ -60,28 +59,29 @@ async function createOwner(owner: any): Promise<Number> {
     }
 }
 
-async function createPet(pet: any): Promise<Number> {
+async function createPet(pet: any): Promise<number> {
     delete pet["_id"];
     delete pet["uuid"];
 
     pet.uuid = await createUuid("pets");
-    let res = await validateOwner(pet.OwnerID);
+    let res = await validateUuid("owners", pet.OwnerID);
 
-    if (res !== 200) {
+    if (res !== 302) {
         return res;
     }
     res = await validatePet(pet);
+
     if (res === 200) {
-        await ownerCollection.insertOne(pet);
+        await petCollection.insertOne(pet);
         return 200;
     } else {
         return res;
     }
 }
 
-async function updateOwner(owner: any): Promise<Number> {
+async function updateOwner(owner: any): Promise<number> {
     delete owner["_id"];
-    const res = await validateOwner(owner);
+    const res = await validateOwner(owner.uuid);
     if (res === 302) {
         await ownerCollection.updateOne({ uuid: owner.uuid }, { $set: owner });
         console.log("> 200 :: Owner Updated Successfully");
@@ -91,12 +91,14 @@ async function updateOwner(owner: any): Promise<Number> {
     }
 }
 
-async function updatePet(pet: any): Promise<Number> {
+async function updatePet(pet: any): Promise<number> {
     delete pet["_id"];
-    let res = await validateOwner(pet.OwnerID);
+    let res = await validateUuid("owners", pet.OwnerID);
+
     if (res !== 302) {
         return res;
     }
+
     res = await validatePet(pet);
     if (res === 302) {
         await petCollection.updateOne({ uuid: pet.uuid }, { $set: pet });
@@ -107,8 +109,8 @@ async function updatePet(pet: any): Promise<Number> {
     }
 }
 
-async function deletePet(uuid: string): Promise<Number> {
-    const res = await validatePet({ uuid: uuid });
+async function deletePet(uuid: string): Promise<number> {
+    const res = await validateUuid("pets", uuid);
     if (res === 302) {
         await petCollection.deleteOne({ uuid: uuid });
         console.log("> 200 :: Pet Deleted Successfully");
@@ -118,8 +120,8 @@ async function deletePet(uuid: string): Promise<Number> {
     }
 }
 
-async function deleteOwner(uuid: string): Promise<Number> {
-    const res = await validateOwner({ uuid: uuid });
+async function deleteOwner(uuid: string): Promise<number> {
+    const res = await validateUuid("owners", uuid);
     if (res === 302) {
         await ownerCollection.deleteOne({ uuid: uuid });
         await petCollection.deleteMany({ OwnerID: uuid });
@@ -133,7 +135,7 @@ async function deleteOwner(uuid: string): Promise<Number> {
 }
 
 async function getAllPets(OwnerID: string): Promise<any> {
-    const res = await validateOwner({ uuid: OwnerID });
+    const res = await validateUuid("owners", OwnerID);
     if (res === 302) {
         const result = await petCollection.find({ OwnerID: OwnerID }).toArray();
         console.log(result);
@@ -143,13 +145,13 @@ async function getAllPets(OwnerID: string): Promise<any> {
     }
 }
 async function getPet(PetID: string): Promise<any> {
-    const res = await validatePet({ uuid: PetID });
+    const res = await validateUuid("pets", PetID);
     if (res === 302) {
         const result = await petCollection.find({ uuid: PetID }).toArray();
         console.log(result);
         return { code: 200, data: result };
     } else {
-        return res;
+        return { code: res, data: null };
     }
 }
 export {
