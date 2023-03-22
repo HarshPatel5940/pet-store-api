@@ -79,4 +79,88 @@ async function createPet(pet: any): Promise<Number> {
     }
 }
 
-export { MongoConnect, db };
+async function updateOwner(owner: any): Promise<Number> {
+    delete owner["_id"];
+    const res = await validateOwner(owner);
+    if (res === 302) {
+        await ownerCollection.updateOne({ uuid: owner.uuid }, { $set: owner });
+        console.log("> 200 :: Owner Updated Successfully");
+        return 200;
+    } else {
+        return res;
+    }
+}
+
+async function updatePet(pet: any): Promise<Number> {
+    delete pet["_id"];
+    let res = await validateOwner(pet.OwnerID);
+    if (res !== 302) {
+        return res;
+    }
+    res = await validatePet(pet);
+    if (res === 302) {
+        await petCollection.updateOne({ uuid: pet.uuid }, { $set: pet });
+        console.log("> 200 :: Pet Updated Successfully");
+        return 200;
+    } else {
+        return res;
+    }
+}
+
+async function deletePet(uuid: string): Promise<Number> {
+    const res = await validatePet({ uuid: uuid });
+    if (res === 302) {
+        await petCollection.deleteOne({ uuid: uuid });
+        console.log("> 200 :: Pet Deleted Successfully");
+        return 200;
+    } else {
+        return res;
+    }
+}
+
+async function deleteOwner(uuid: string): Promise<Number> {
+    const res = await validateOwner({ uuid: uuid });
+    if (res === 302) {
+        await ownerCollection.deleteOne({ uuid: uuid });
+        await petCollection.deleteMany({ OwnerID: uuid });
+        console.log(
+            "> 200 :: Owner Deleted Successfully :: pet's of the owner is also deleted"
+        );
+        return 200;
+    } else {
+        return res;
+    }
+}
+
+async function getAllPets(OwnerID: string): Promise<any> {
+    const res = await validateOwner({ uuid: OwnerID });
+    if (res === 302) {
+        const result = await petCollection.find({ OwnerID: OwnerID }).toArray();
+        console.log(result);
+        return { code: 200, data: result };
+    } else {
+        return res;
+    }
+}
+async function getPet(PetID: string): Promise<any> {
+    const res = await validatePet({ uuid: PetID });
+    if (res === 302) {
+        const result = await petCollection.find({ uuid: PetID }).toArray();
+        console.log(result);
+        return { code: 200, data: result };
+    } else {
+        return res;
+    }
+}
+export {
+    MongoConnect,
+    db,
+    createOwner,
+    createPet,
+    updateOwner,
+    updatePet,
+    deletePet,
+    deleteOwner,
+    getAllPets,
+    getPet,
+};
