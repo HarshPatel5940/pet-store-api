@@ -46,4 +46,39 @@ async function createUuid(col: "pets" | "owners"): Promise<string | undefined> {
     }
 }
 
+async function createOwner(owner: any): Promise<Number> {
+    delete owner["_id"];
+    delete owner["uuid"];
+
+    owner.uuid = await createUuid("owners");
+
+    if ((await validateOwner(owner)) !== 400) {
+        await ownerCollection.insertOne(owner);
+        return 200;
+    } else {
+        return 400;
+    }
+}
+
+async function createPet(pet: any): Promise<Number> {
+    delete pet["_id"];
+    delete pet["uuid"];
+
+    pet.uuid = await createUuid("pets");
+
+    if ((await validateOwner(pet)) !== 400) {
+        await ownerCollection.insertOne(pet);
+        return 200;
+    } else {
+        return 400;
+    }
+}
+
+// async function deleteOwner(owner:any) Promise<Number> {
+//     if ((await validateOwner(owner)) === 200) {
+//         await ownerCollection.deleteOne({uuid: owner.uuid});
+//         return 200;
+//     }
+// }
+
 export { MongoConnect, db };

@@ -6,7 +6,7 @@ async function validateUuid(
     uuid: string
 ): Promise<Number> {
     const result = await db.collection(col).find({ uuid: uuid }).toArray();
-    if (result.length === 0) {
+    if (result.length !== 0) {
         console.log("> 302 :: uuid Found");
         return 302;
     } else {
