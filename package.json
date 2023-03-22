@@ -5,7 +5,7 @@
     "description": "An API for managing the pet's in the store. This is a fun project given by GDSC club",
     "main": "dist/index.js",
     "scripts": {
-        "prod": "tsc && node dist/index.js",
+        "prod": "node dist/index.js",
         "dev": "ts-node-dev --respawn --transpile-only src/index.ts"
     },
     "repository": {
