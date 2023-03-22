@@ -42,7 +42,7 @@ async function createUuid(col: "pets" | "owners"): Promise<string | undefined> {
         return uuid;
     } else {
         console.log("UUID : REGENERATING A NEW ONE one");
-        await createUuid(col);
+        return await createUuid(col);
     }
 }
 
@@ -51,12 +51,12 @@ async function createOwner(owner: any): Promise<Number> {
     delete owner["uuid"];
 
     owner.uuid = await createUuid("owners");
-
-    if ((await validateOwner(owner)) !== 400) {
+    const res = await validateOwner(owner);
+    if (res === 200) {
         await ownerCollection.insertOne(owner);
         return 200;
     } else {
-        return 400;
+        return res;
     }
 }
 
@@ -65,20 +65,18 @@ async function createPet(pet: any): Promise<Number> {
     delete pet["uuid"];
 
     pet.uuid = await createUuid("pets");
+    let res = await validateOwner(pet.OwnerID);
 
-    if ((await validateOwner(pet)) !== 400) {
+    if (res !== 200) {
+        return res;
+    }
+    res = await validatePet(pet);
+    if (res === 200) {
         await ownerCollection.insertOne(pet);
         return 200;
     } else {
-        return 400;
+        return res;
     }
 }
-
-// async function deleteOwner(owner:any) Promise<Number> {
-//     if ((await validateOwner(owner)) === 200) {
-//         await ownerCollection.deleteOne({uuid: owner.uuid});
-//         return 200;
-//     }
-// }
 
 export { MongoConnect, db };
