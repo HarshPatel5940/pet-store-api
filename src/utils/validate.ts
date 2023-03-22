@@ -1,4 +1,3 @@
-import { nanoid } from "nanoid";
 import { petSchema, ownerSchema } from "../schema/yup-schemas";
 import { db } from "./mongo";
 

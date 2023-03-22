@@ -1,8 +1,7 @@
-// id, name of the pet, name of the owner, age, type and gender.
 import yup from "yup";
 
 export const petSchema = yup.object().shape({
-    uuid: yup.string().required(),
+    _id: yup.string().required(),
     OwnerID: yup.string().required(),
     petName: yup.string().required(),
     petAge: yup.number().required(),

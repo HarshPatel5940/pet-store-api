@@ -1,5 +1,4 @@
 import { config } from "dotenv";
-
 import { MongoClient } from "mongodb";
 import { validatePet, validateOwner } from "./validate";
 config();
@@ -28,6 +27,22 @@ async function MongoConnect() {
         console.log("> 500 :: Connection Failed\n---\n");
         console.log(err);
         process.exit(1);
+    }
+}
+
+async function createUuid(col: "pets" | "owners"): Promise<string | undefined> {
+    let uuid;
+    import("nanoid").then((nanoid) => {
+        uuid = nanoid.nanoid(15);
+    });
+
+    const result = await db.collection(col).find({ uuid: uuid }).toArray();
+
+    if (result.length === 0) {
+        return uuid;
+    } else {
+        console.log("UUID : REGENERATING A NEW ONE one");
+        await createUuid(col);
     }
 }
 
