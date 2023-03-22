@@ -13,6 +13,5 @@ export const petSchema = yup.object().shape({
 export const ownerSchema = yup.object().shape({
     uuid: yup.string().required(),
     ownerName: yup.string().required(),
-    ownerAge: yup.number().required(),
-    OwnerContact: yup.string(), // Not Required!!
+    ownerEmail: yup.string(), // Optional
 });

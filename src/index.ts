@@ -1,8 +1,9 @@
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
+import { MongoConnect } from "./utils/mongo";
 
 dotenv.config();
-
+MongoConnect();
 const app = express();
 
 app.get("/", (req: Request, res: Response) => {
