@@ -11,6 +11,7 @@ I have used **ExpressJS** with **Typescript** to build the backbone of the API. 
 
 ### 🟢 Endpoints
 
+-   GET `/` - Returns Hello World `:)`
 -   GET `/api/checkconnection` - Return's the Status of connection with uptime
 -   `/api/pets/:PetID`
     -   GET - Get's info about single Pet from DB

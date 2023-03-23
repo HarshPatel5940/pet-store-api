@@ -7,6 +7,12 @@ MongoConnect();
 export const app = express();
 app.use(express.json());
 
+app.get("/", function (req, res) {
+    res.status(200).send(
+        "Hello World! Thanks for using Pet-Store-API, Fell free to checkout other ENDPOINTS"
+    );
+});
+
 app.get("/api/CheckConnection", async (req: Request, res: Response) => {
     res.sendStatus(await CheckConnection());
 });

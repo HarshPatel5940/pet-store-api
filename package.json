@@ -1,7 +1,7 @@
 {
     "name": "pet-store-api",
     "type": "commonjs",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "description": "An API for managing the pet's in the store. This is a fun project given by GDSC club",
     "main": "dist/index.js",
     "scripts": {
