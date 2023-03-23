@@ -31,6 +31,22 @@ async function MongoConnect() {
     }
 }
 
+async function CheckConnection() {
+    try {
+        const status = await client.db("admin").command({
+            ping: 1,
+        });
+        const Data = `Uptime: ${Math.floor(
+            process.uptime()
+        )} Seconds | MongoDB: ${status.ok}`;
+        console.log(Data);
+        return 200;
+    } catch (err) {
+        console.error(err);
+        return 403;
+    }
+}
+
 async function createUuid(col: "pets" | "owners"): Promise<string | undefined> {
     let uuid = await nanoid(15);
 
@@ -154,15 +170,28 @@ async function getPet(PetID: string): Promise<any> {
         return { code: res, data: null };
     }
 }
+
+async function getOwner(OwnerID: string): Promise<any> {
+    const res = await validateUuid("owners", OwnerID);
+    if (res === 302) {
+        const result = await ownerCollection.find({ uuid: OwnerID });
+        console.log(result);
+        return { code: 200, data: result };
+    } else {
+        return { code: res, data: null };
+    }
+}
 export {
     MongoConnect,
     db,
-    createOwner,
+    getPet,
+    getAllPets,
     createPet,
-    updateOwner,
     updatePet,
     deletePet,
+    getOwner,
+    createOwner,
+    updateOwner,
     deleteOwner,
-    getAllPets,
-    getPet,
+    CheckConnection,
 };
