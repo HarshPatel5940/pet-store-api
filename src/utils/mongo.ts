@@ -156,7 +156,14 @@ async function deleteOwner(uuid: string): Promise<number> {
 async function getAllPets(OwnerID: string): Promise<any> {
     const res = await validateUuid("owners", OwnerID);
     if (res === 302) {
-        const result = await petCollection.find({ OwnerID: OwnerID }).toArray();
+        const result: any = await petCollection.find({ OwnerID: OwnerID }).toArray();
+        try {
+            result.forEach((element: any) => {
+                delete element["_id"];
+            });
+        } catch (error) {
+            console.log(error);
+        }
         console.log(result);
         return { code: 200, data: result };
     } else {
@@ -166,7 +173,12 @@ async function getAllPets(OwnerID: string): Promise<any> {
 async function getPet(PetID: string): Promise<any> {
     const res = await validateUuid("pets", PetID);
     if (res === 302) {
-        const result = await petCollection.find({ uuid: PetID }).toArray();
+        const result: any = await petCollection.findOne({ uuid: PetID });
+        try {
+            delete result["_id"];
+        } catch (error) {
+            console.log(error);
+        }
         console.log(result);
         return { code: 200, data: result };
     } else {

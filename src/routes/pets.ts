@@ -28,7 +28,7 @@ router.put("/", async (req: Request, res: Response) => {
     res.sendStatus(await updatePet(req.body));
 });
 
-router.get("/allpets/:OwnerID", async (req: Request, res: Response) => {
+router.get("/ownby/:OwnerID", async (req: Request, res: Response) => {
     let response = await getAllPets(req.params.OwnerID);
     try {
         res.status(response.code).send(response.data);
